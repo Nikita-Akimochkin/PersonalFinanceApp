@@ -19,6 +19,7 @@ namespace PersonalFinanceApp
             InitializeComponent();
         }
 
+        #region Income click
         private void IncomeButton_Click(object sender, RoutedEventArgs e)
         {
             // Подсвечиваем кнопку Доход
@@ -26,7 +27,9 @@ namespace PersonalFinanceApp
             // Возвращаем кнопку Расход к исходному виду
             ExpenseButton.Background = Brushes.LightGray;
         }
+        #endregion
 
+        #region Expneses click
         private void ExpenseButton_Click(object sender, RoutedEventArgs e)
         {
             // Подсвечиваем кнопку Расход
@@ -34,12 +37,7 @@ namespace PersonalFinanceApp
             // Возвращаем кнопку Доход к исходному виду
             IncomeButton.Background = Brushes.LightGray;
         }
-
-        private void AmountTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            // Разрешаем только цифры
-            e.Handled = !int.TryParse(e.Text, out _);
-        }
+        #endregion
 
         #region GotFocus
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
@@ -59,35 +57,15 @@ namespace PersonalFinanceApp
         }
         #endregion
 
-        private void SaveTransaction(int userId, int amount, string type, string category)
+        #region Amount text box
+        private void AmountTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            try
-            {
-                using (NpgsqlConnection connection = dbHelper.GetConnection())
-                {
-                    using (var command = new NpgsqlCommand())
-                    {
-                        command.Connection = connection;
-                        // SQL запрос для добавления новой транзакции
-                        command.CommandText = "INSERT INTO Transactions (userID, amount, type, category, registration_date) " +
-                                          "VALUES (@UserID, @Amount, @Type, @Category, @Registration_date)";
-                        command.Parameters.AddWithValue("UserID", user.UserID);
-                        command.Parameters.AddWithValue("Amount", transaction.Amount);
-                        command.Parameters.AddWithValue("Type", transaction.Type);
-                        command.Parameters.AddWithValue("Category", transaction.Category);
-                        command.Parameters.AddWithValue("Registration_date", DateTime.Now);
-
-                        command.ExecuteNonQuery();
-                    }
-                }
-            }
-
-            catch (Exception ex)
-            {
-                MessageBox.Show("Ошибка при сохранении транзакции: " + ex.Message);
-            }
+            // Разрешаем только цифры
+            e.Handled = !int.TryParse(e.Text, out _);
         }
+        #endregion
 
+        #region cont click
         private void Continue_Click(object sender, RoutedEventArgs e)
         {
             transaction.Amount = Convert.ToInt32(AmountTextBox.Text);
@@ -121,7 +99,40 @@ namespace PersonalFinanceApp
             Close();
 
         }
+        #endregion
 
+        #region save trans
+        private void SaveTransaction(int userId, int amount, string type, string category)
+        {
+            try
+            {
+                using (NpgsqlConnection connection = dbHelper.GetConnection())
+                {
+                    using (var command = new NpgsqlCommand())
+                    {
+                        command.Connection = connection;
+                        // SQL запрос для добавления новой транзакции
+                        command.CommandText = "INSERT INTO Transactions (userID, amount, type, category, registration_date) " +
+                                          "VALUES (@UserID, @Amount, @Type, @Category, @Registration_date)";
+                        command.Parameters.AddWithValue("UserID", user.UserID);
+                        command.Parameters.AddWithValue("Amount", transaction.Amount);
+                        command.Parameters.AddWithValue("Type", transaction.Type);
+                        command.Parameters.AddWithValue("Category", transaction.Category);
+                        command.Parameters.AddWithValue("Registration_date", DateTime.Now);
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при сохранении транзакции: " + ex.Message);
+            }
+        }
+        #endregion
+
+        #region update balance
         private void UpdateAccountBalance(int userId)
         {
             try
@@ -155,5 +166,6 @@ namespace PersonalFinanceApp
                 MessageBox.Show("Ошибка при обновлении баланса: " + ex.Message);
             }
         }
+        #endregion
     }
 }

@@ -21,10 +21,17 @@ namespace PersonalFinanceApp
             GetRecentTransactionsLoaded();
         }
 
+        #region Load USer Acc
+        public void LoadUserAccountBalance()
+        {
+            user.UserAccount = GetUserAccountBalance(user.UserID);
+            TotalTextBlock.Text = Convert.ToString(user.UserAccount);
+        }
+        #endregion
+
+        #region GET USER ACC
         private int GetUserAccountBalance(int userId)
         {
-            user.UserAccount = 0;
-
             try
             {
                 using (NpgsqlConnection connection = dbHelper.GetConnection())
@@ -47,19 +54,34 @@ namespace PersonalFinanceApp
 
             return user.UserAccount;
         }
+        #endregion
 
-        public void LoadUserAccountBalance()
-        {
-            user.UserAccount = GetUserAccountBalance(user.UserID);
-            TotalTextBlock.Text = Convert.ToString(user.UserAccount);
-        }
-
+        #region Trans Click
         private void Transaction_Click(object sender, RoutedEventArgs e)
         {
             TransactionsWindow transactionsWindow = new TransactionsWindow();
             transactionsWindow.Show();
         }
+        #endregion
 
+        #region Get Top expenses load
+        private void GetTopExpensesLoaded()
+        {
+            var topExpenses = GetTopExpenses(user.UserID);
+            int i = 1;
+
+            foreach (var category in topExpenses)
+            {
+                TopExpensesList.Items.Add(new TextBlock
+                {
+                    Text = $"{i++}. {category.name} - {category.amount}",
+                    Margin = new Thickness(0, 0, 0, 4)
+                });
+            }
+        }
+        #endregion
+
+        #region Get top expenses
         private List<(string name, int amount)> GetTopExpenses(int userId)
         {
             var categories = new List<(string name, int amount)>();
@@ -101,22 +123,47 @@ namespace PersonalFinanceApp
 
             return categories;
         }
+        #endregion
 
-        private void GetTopExpensesLoaded()
+        #region Show full history click
+        private void ShowFullHistory_Click(object sender, RoutedEventArgs e)
         {
-            var topExpenses = GetTopExpenses(user.UserID);
+            FullHistoryWindow fullHistoryWindow = new FullHistoryWindow();
+            fullHistoryWindow.Show();
+        }
+        #endregion
+
+        #region Get recent trans load
+        private void GetRecentTransactionsLoaded()
+        {
+            var RecentTransaction = GetRecentTransactions(user.UserID);
             int i = 1;
 
-            foreach (var category in topExpenses)
+            foreach (var transaction in RecentTransaction)
             {
-                TopExpensesList.Items.Add(new TextBlock
+                if (transaction.type == "Доход")
                 {
-                    Text = $"{i++}. {category.name} - {category.amount}",
-                    Margin = new Thickness(0, 0, 0, 4)
-                });
+                    RecentTransactionsList.Items.Add(new TextBlock
+                    {
+                        Text = $"{i++}. {transaction.category} - {transaction.amount}\n {transaction.date}",
+                        Foreground = Brushes.Green,
+                        Margin = new Thickness(0, 0, 0, 2)
+                    });
+                }
+                else
+                {
+                    RecentTransactionsList.Items.Add(new TextBlock
+                    {
+                        Text = $"{i++}. {transaction.category} - {transaction.amount}\n {transaction.date}",
+                        Foreground = Brushes.Red,
+                        Margin = new Thickness(0, 0, 0, 2)
+                    });
+                }
             }
         }
+        #endregion
 
+        #region Get Recent trans
         private List<(string category, string type, int amount, DateTime date)> GetRecentTransactions(int userID)
         {
             var transactions = new List<(string category, string type, int amount, DateTime date)>();
@@ -148,51 +195,22 @@ namespace PersonalFinanceApp
                 }
             }
         }
+        #endregion
 
-        private void GetRecentTransactionsLoaded()
-        {
-            var RecentTransaction = GetRecentTransactions(user.UserID);
-            int i = 1;
-
-            foreach (var transaction in RecentTransaction)
-            {
-                if (transaction.type == "Доход")
-                {
-                    RecentTransactionsList.Items.Add(new TextBlock
-                    {
-                        Text = $"{i++}. {transaction.category} - {transaction.amount}\n {transaction.date}",
-                        Foreground = Brushes.Green,
-                        Margin = new Thickness(0, 0, 0, 2)
-                    });
-                }
-                else
-                {
-                    RecentTransactionsList.Items.Add(new TextBlock
-                    {
-                        Text = $"{i++}. {transaction.category} - {transaction.amount}\n {transaction.date}",
-                        Foreground = Brushes.Red,
-                        Margin = new Thickness(0, 0, 0, 2)
-                    });
-                }
-            }
-        }
-
-        private void ShowFullHistory_Click(object sender, RoutedEventArgs e)
-        {
-            FullHistoryWindow fullHistoryWindow = new FullHistoryWindow();
-            fullHistoryWindow.Show();
-        }
-
+        #region Expand top expenses click
         private void ExpandTopExpenses_Click(object sender, RoutedEventArgs e)
         {
             var allExpensesWindow = new AllExpensesWindow(); // Создай новое окно для всех расходов
             allExpensesWindow.Show(); // Открой его
         }
+        #endregion
 
+        #region Reminder Open CLick
         private void ReminderOpen_Click(object sender, RoutedEventArgs e)
         {
             ReminderWindow reminderWindow = new ReminderWindow();
             reminderWindow.Show();
         }
+        #endregion
     }
 }

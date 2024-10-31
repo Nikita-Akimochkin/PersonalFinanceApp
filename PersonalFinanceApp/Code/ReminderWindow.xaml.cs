@@ -37,6 +37,23 @@ namespace PersonalFinanceApp
         }
         #endregion
 
+        #region rem click
+        private void ReminderAdd_Click(object sender, RoutedEventArgs e)
+        {
+            reminder.Description = ReminderTextBox.Text;
+
+            // Проверка на пустые поля
+            if (string.IsNullOrWhiteSpace(reminder.Description))
+            {
+                MessageBox.Show("Пожалуйста, напишите, что вам напомнить.");
+                return;
+            }
+
+            // Вызов метода регистрации пользователя
+            ReminderAdd(user.UserID, reminder.Description);
+        }
+        #endregion 
+
         #region Reminder Add
         private void ReminderAdd(int userId, string description)
         {
@@ -71,21 +88,25 @@ namespace PersonalFinanceApp
         }
         #endregion
 
-        private void ReminderAdd_Click(object sender, RoutedEventArgs e)
+        #region Ger load
+        private void GetRemindersLoaded()
         {
-            reminder.Description = ReminderTextBox.Text;
+            var reminderList = GetReminders(user.UserID);
+            int i = 1;
 
-            // Проверка на пустые поля
-            if (string.IsNullOrWhiteSpace(reminder.Description))
+            foreach (var r in reminderList)
             {
-                MessageBox.Show("Пожалуйста, напишите, что вам напомнить.");
-                return;
+
+                YourReminderList.Items.Add(new TextBlock
+                {
+                    Text = $"{i++}. {r.description}\n {r.date}",
+                    Margin = new Thickness(0, 0, 0, 2)
+                });
             }
-
-            // Вызов метода регистрации пользователя
-            ReminderAdd(user.UserID, reminder.Description);
         }
+        #endregion
 
+        #region Get remind
         private List<(string description, DateTime date)> GetReminders(int userID)
         {
             var reminderList = new List<(string description, DateTime date)>();
@@ -114,21 +135,6 @@ namespace PersonalFinanceApp
                 }
             }
         }
-
-        private void GetRemindersLoaded()
-        {
-            var reminderList = GetReminders(user.UserID);
-            int i = 1;
-
-            foreach (var r in reminderList)
-            {
-
-                YourReminderList.Items.Add(new TextBlock
-                {
-                    Text = $"{i++}. {r.description}\n {r.date}",
-                    Margin = new Thickness(0, 0, 0, 2)
-                });
-            }
-        }
+        #endregion
     }
 }

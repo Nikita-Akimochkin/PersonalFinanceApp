@@ -19,6 +19,37 @@ namespace PersonalFinanceApp
             GetRecentTransactionsLoaded();
         }
 
+        #region Get recent load
+        private void GetRecentTransactionsLoaded()
+        {
+            var RecentTransaction = GetRecentTransactions(user.UserID);
+            int i = 1;
+
+            foreach (var transaction in RecentTransaction)
+            {
+                if (transaction.type == "Доход")
+                {
+                    FullTransactionsHistoryList.Items.Add(new TextBlock
+                    {
+                        Text = $"{i++}. {transaction.category} - {transaction.amount}\n {transaction.date}",
+                        Foreground = Brushes.Green,
+                        Margin = new Thickness(0, 0, 0, 2)
+                    });
+                }
+                else
+                {
+                    FullTransactionsHistoryList.Items.Add(new TextBlock
+                    {
+                        Text = $"{i++}. {transaction.category} - {transaction.amount}\n {transaction.date}",
+                        Foreground = Brushes.Red,
+                        Margin = new Thickness(0, 0, 0, 2)
+                    });
+                }
+            }
+        }
+        #endregion
+
+        #region Get recent
         private List<(string category, string type, int amount, DateTime date)> GetRecentTransactions(int userID)
         {
             var transactions = new List<(string category, string type, int amount, DateTime date)>();
@@ -49,33 +80,6 @@ namespace PersonalFinanceApp
                 }
             }
         }
-
-        private void GetRecentTransactionsLoaded()
-        {
-            var RecentTransaction = GetRecentTransactions(user.UserID);
-            int i = 1;
-
-            foreach (var transaction in RecentTransaction)
-            {
-                if (transaction.type == "Доход")
-                {
-                    FullTransactionsHistoryList.Items.Add(new TextBlock
-                    {
-                        Text = $"{i++}. {transaction.category} - {transaction.amount}\n {transaction.date}",
-                        Foreground = Brushes.Green,
-                        Margin = new Thickness(0, 0, 0, 2)
-                    });
-                }
-                else
-                {
-                    FullTransactionsHistoryList.Items.Add(new TextBlock
-                    {
-                        Text = $"{i++}. {transaction.category} - {transaction.amount}\n {transaction.date}",
-                        Foreground = Brushes.Red,
-                        Margin = new Thickness(0, 0, 0, 2)
-                    });
-                }
-            }
-        }
+        #endregion
     }
 }

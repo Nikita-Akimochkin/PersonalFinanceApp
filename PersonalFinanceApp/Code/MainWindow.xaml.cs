@@ -34,25 +34,6 @@ namespace PersonalFinanceApp
         }
         #endregion
 
-        #region Registration_Click
-        private void Registration_Click(object sender, RoutedEventArgs e)
-        {
-            user.UserName = NameTextBox.Text;
-            user.Email = EmailTextBox.Text;
-            user.Password = PasswordTextBox.Text;
-
-            // Проверка на пустые поля
-            if (string.IsNullOrWhiteSpace(user.UserName) || string.IsNullOrWhiteSpace(user.Email) || string.IsNullOrWhiteSpace(user.Password))
-            {
-                MessageBox.Show("Пожалуйста, заполните все поля!");
-                return;
-            }
-
-            // Вызов метода регистрации пользователя
-            RegisterUser(user.UserName, user.Email, user.Password);
-        }
-        #endregion
-
         #region Login_Click
         private void Login_Click(object sender, RoutedEventArgs e)
         {
@@ -73,11 +54,21 @@ namespace PersonalFinanceApp
         }
         #endregion
 
-        #region SwitchToLogin_Click
-        private void SwitchToLogin_Click(object sender, RoutedEventArgs e)
+        #region Check User Credentials
+        private bool CheckUserCredentials(string email, string password)
         {
-            RegistrationGrid.Visibility = Visibility.Collapsed;
-            LoginGrid.Visibility = Visibility.Visible;
+            using (NpgsqlConnection connection = dbHelper.GetConnection())
+            {
+                string query = "SELECT COUNT(*) FROM users WHERE email = @Email AND password = @Password";
+                using (NpgsqlCommand cmd = new NpgsqlCommand(query, connection))
+                {
+                    cmd.Parameters.AddWithValue("Email", user.Email);
+                    cmd.Parameters.AddWithValue("Password", user.Password);
+
+                    int userExist = Convert.ToInt32(cmd.ExecuteScalar());
+                    return userExist > 0;
+                }
+            }
         }
         #endregion
 
@@ -86,6 +77,25 @@ namespace PersonalFinanceApp
         {
             RegistrationGrid.Visibility = Visibility.Visible;
             LoginGrid.Visibility = Visibility.Collapsed;
+        }
+        #endregion
+
+        #region Registration_Click
+        private void Registration_Click(object sender, RoutedEventArgs e)
+        {
+            user.UserName = NameTextBox.Text;
+            user.Email = EmailTextBox.Text;
+            user.Password = PasswordTextBox.Text;
+
+            // Проверка на пустые поля
+            if (string.IsNullOrWhiteSpace(user.UserName) || string.IsNullOrWhiteSpace(user.Email) || string.IsNullOrWhiteSpace(user.Password))
+            {
+                MessageBox.Show("Пожалуйста, заполните все поля!");
+                return;
+            }
+
+            // Вызов метода регистрации пользователя
+            RegisterUser(user.UserName, user.Email, user.Password);
         }
         #endregion
 
@@ -138,21 +148,11 @@ namespace PersonalFinanceApp
         }
         #endregion
 
-        #region Check User Credentials
-        private bool CheckUserCredentials(string email, string password)
+        #region SwitchToLogin_Click
+        private void SwitchToLogin_Click(object sender, RoutedEventArgs e)
         {
-            using (NpgsqlConnection connection = dbHelper.GetConnection())
-            {
-                string query = "SELECT COUNT(*) FROM users WHERE email = @Email AND password = @Password";
-                using (NpgsqlCommand cmd = new NpgsqlCommand(query, connection))
-                {
-                    cmd.Parameters.AddWithValue("Email", user.Email);
-                    cmd.Parameters.AddWithValue("Password", user.Password);
-
-                    int userExist = Convert.ToInt32(cmd.ExecuteScalar());
-                    return userExist > 0;
-                }
-            }
+            RegistrationGrid.Visibility = Visibility.Collapsed;
+            LoginGrid.Visibility = Visibility.Visible;
         }
         #endregion
     }

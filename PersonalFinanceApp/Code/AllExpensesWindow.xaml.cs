@@ -18,6 +18,7 @@ namespace PersonalFinanceApp
             LoadAllExpenses();
         }
 
+        #region Load all
         private void LoadAllExpenses()
         {
             var allCategories = GetAllExpenses(user.UserID); // Метод, который получает все категории
@@ -34,7 +35,9 @@ namespace PersonalFinanceApp
 
             }
         }
+        #endregion
 
+        #region Get all
         private List<(string name, int amount)> GetAllExpenses(int userId)
         {
             var categories = new List<(string name, int amount)>();
@@ -71,5 +74,6 @@ namespace PersonalFinanceApp
 
             return categories;
         }
+        #endregion
     }
 }
