@@ -58,7 +58,7 @@ namespace PersonalFinanceApp
         {
             user.Email = EmailLoginTextBox.Text;
             user.Password = PasswordLoginTextBox.Text;
-            user.UserID = GetUserId(user.Email);
+            user.UserID = user.GetUserId(user.Email);
 
             if (CheckUserCredentials(user.Email, user.Password))
             {
@@ -155,38 +155,5 @@ namespace PersonalFinanceApp
             }
         }
         #endregion
-
-        private int GetUserId(string email)
-        {
-            user.UserID = -1; // Значение по умолчанию, если пользователь не найден
-
-            try
-            {
-                using (NpgsqlConnection connection = dbHelper.GetConnection())
-                {
-                    using (var command = new NpgsqlCommand())
-                    {
-                        command.Connection = connection;
-                        command.CommandText = "SELECT id FROM users WHERE email = @Email LIMIT 1";
-                        command.Parameters.AddWithValue("Email", user.Email);
-
-                        // Выполнение запроса и чтение результата
-                        using (var reader = command.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                user.UserID = reader.GetInt32(0); // Получаем ID пользователя
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Ошибка при получении ID пользователя: " + ex.Message);
-            }
-
-            return user.UserID; // Возвращаем ID пользователя или -1, если не найден
-        }
     }
 }
