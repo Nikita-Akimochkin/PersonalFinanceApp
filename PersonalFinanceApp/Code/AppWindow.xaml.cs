@@ -1,0 +1,231 @@
+﻿using Npgsql;
+using System;
+using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+
+namespace PersonalFinanceApp
+{
+    public partial class AppWindow : Window
+    {
+        ActiveUser user = new ActiveUser();
+        Transaction transaction = new Transaction();
+        DataBaseHelper dbHelper = new DataBaseHelper();
+
+        public AppWindow()
+        {
+            InitializeComponent();
+            LoadUserAccountBalance();
+            GetTopExpensesLoaded();
+            GetRecentTransactionsLoaded();
+        }
+
+        private int GetUserAccountBalance(int userId)
+        {
+            user.UserAccount = 0;
+
+            try
+            {
+                using (NpgsqlConnection connection = dbHelper.GetConnection())
+                {
+                    using (var command = new NpgsqlCommand())
+                    {
+                        command.Connection = connection;
+                        command.CommandText = "SELECT account FROM users WHERE id = @UserId";
+                        command.Parameters.AddWithValue("UserId", user.UserID);
+
+                        // Выполняем запрос и получаем баланс
+                        user.UserAccount = Convert.ToInt32(command.ExecuteScalar());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при получении баланса: " + ex.Message);
+            }
+
+            return user.UserAccount;
+        }
+
+        private int GetUserId(string email)
+        {
+            user.UserID = -1; // Значение по умолчанию, если пользователь не найден
+
+            try
+            {
+                using (NpgsqlConnection connection = dbHelper.GetConnection())
+                {
+                    using (var command = new NpgsqlCommand())
+                    {
+                        command.Connection = connection;
+                        command.CommandText = "SELECT id FROM users WHERE email = @Email LIMIT 1";
+                        command.Parameters.AddWithValue("Email", user.Email);
+
+                        // Выполнение запроса и чтение результата
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                user.UserID = reader.GetInt32(0); // Получаем ID пользователя
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при получении ID пользователя: " + ex.Message);
+            }
+
+            return user.UserID; // Возвращаем ID пользователя или -1, если не найден
+        }
+
+        public void LoadUserAccountBalance()
+        {
+            user.UserAccount = GetUserAccountBalance(user.UserID);
+            TotalTextBlock.Text = Convert.ToString(user.UserAccount);
+        }
+
+        private void Transaction_Click(object sender, RoutedEventArgs e)
+        {
+            TransactionsWindow transactionsWindow = new TransactionsWindow();
+            transactionsWindow.Show();
+        }
+
+        private List<(string name, int amount)> GetTopExpenses(int userId)
+        {
+            var categories = new List<(string name, int amount)>();
+
+            try
+            {
+                using (NpgsqlConnection connection = dbHelper.GetConnection())
+                {
+                    using (var command = new NpgsqlCommand())
+                    {
+                        command.Connection = connection;
+                        command.CommandText = @"
+                            SELECT category, SUM(amount) AS total_amount
+                            FROM transactions
+                            WHERE userId = @UserId AND type = 'Расход'
+                            GROUP BY category
+                            ORDER BY total_amount DESC
+                            LIMIT 3";
+
+                        command.Parameters.AddWithValue("UserId", user.UserID);
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                transaction.Category = reader.GetString(0);
+                                transaction.Amount = reader.GetInt32(1);
+
+                                categories.Add((transaction.Category, transaction.Amount));
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при получении топ расходов: " + ex.Message);
+            }
+
+            return categories;
+        }
+
+        private void GetTopExpensesLoaded()
+        {
+            var topExpenses = GetTopExpenses(user.UserID);
+            int i = 1;
+
+            foreach (var category in topExpenses)
+            {
+                TopExpensesList.Items.Add(new TextBlock
+                {
+                    Text = $"{i++}. {category.name} - {category.amount}",
+                    Margin = new Thickness(0, 0, 0, 4)
+                });
+            }
+        }
+
+        private List<(string category, string type, int amount, DateTime date)> GetRecentTransactions(int userID)
+        {
+            var transactions = new List<(string category, string type, int amount, DateTime date)>();
+
+            using (var connection = dbHelper.GetConnection())
+            {
+                using (var command = new NpgsqlCommand(@"
+                    SELECT category, type, amount, registration_date
+                    FROM transactions WHERE userid=@UserId
+                    ORDER BY transactionid DESC
+                    LIMIT 5", connection))
+                {
+                    command.Parameters.AddWithValue("UserId", user.UserID);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            transaction.Category = reader.GetString(0);
+                            transaction.Type = reader.GetString(1);
+                            transaction.Amount = reader.GetInt32(2);
+                            transaction.Date = reader.GetDateTime(3);
+
+                            transactions.Add((transaction.Category, transaction.Type, transaction.Amount, transaction.Date));
+                        }
+                    }
+
+                    return transactions;
+                }
+            }
+        }
+
+        private void GetRecentTransactionsLoaded()
+        {
+            var RecentTransaction = GetRecentTransactions(user.UserID);
+            int i = 1;
+
+            foreach (var transaction in RecentTransaction)
+            {
+                if (transaction.type == "Доход")
+                {
+                    RecentTransactionsList.Items.Add(new TextBlock
+                    {
+                        Text = $"{i++}. {transaction.category} - {transaction.amount}\n {transaction.date}",
+                        Foreground = Brushes.Green,
+                        Margin = new Thickness(0, 0, 0, 2)
+                    });
+                }
+                else
+                {
+                    RecentTransactionsList.Items.Add(new TextBlock
+                    {
+                        Text = $"{i++}. {transaction.category} - {transaction.amount}\n {transaction.date}",
+                        Foreground = Brushes.Red,
+                        Margin = new Thickness(0, 0, 0, 2)
+                    });
+                }
+            }
+        }
+
+        private void ShowFullHistory_Click(object sender, RoutedEventArgs e)
+        {
+            FullHistoryWindow fullHistoryWindow = new FullHistoryWindow();
+            fullHistoryWindow.Show();
+        }
+
+        private void ExpandTopExpenses_Click(object sender, RoutedEventArgs e)
+        {
+            var allExpensesWindow = new AllExpensesWindow(); // Создай новое окно для всех расходов
+            allExpensesWindow.Show(); // Открой его
+        }
+
+        private void ReminderOpen_Click(object sender, RoutedEventArgs e)
+        {
+            ReminderWindow reminderWindow = new ReminderWindow();
+            reminderWindow.Show();
+        }
+    }
+}
