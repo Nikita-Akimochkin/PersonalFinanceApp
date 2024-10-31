@@ -37,10 +37,10 @@
 
         <!-- Определяем строку для ввода денег-->
         <Grid Grid.Row="1">
-            <TextBox x:Name="AmountTextBox" HorizontalAlignment="Stretch" VerticalAlignment="Center" 
-                     Text="Введите кол-во денег:" Height="20" FontSize="12" Margin="10,0,10,0"
-                     GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" Foreground="Gray"
-                     PreviewTextInput="AmountTextBox_PreviewTextInput"/>
+            <TextBox x:Name="AmountTextBox" Tag="Введите кол-во денег:" HorizontalAlignment="Stretch" 
+                     VerticalAlignment="Center" Text="Введите кол-во денег:" Height="20" FontSize="12" 
+                     Margin="10,0,10,0" GotFocus="TextBox_GotFocus" LostFocus="TextBox_LostFocus" 
+                     Foreground="Gray" PreviewTextInput="AmountTextBox_PreviewTextInput"/>
         </Grid>
 
         <!-- Определяем Бокс с типом -->

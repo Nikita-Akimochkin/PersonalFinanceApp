@@ -1,4 +1,6 @@
 ﻿using Npgsql;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace PersonalFinanceApp
 {
@@ -21,6 +23,26 @@ namespace PersonalFinanceApp
         {
             if (connection != null && connection.State == System.Data.ConnectionState.Open)
                 connection.Close();
+        }
+
+        public void HandleFocus(TextBox textBox, string defaultText, bool isFocused)
+        {
+            if (isFocused)
+            {
+                if (textBox.Text == defaultText)
+                {
+                    textBox.Text = string.Empty;
+                    textBox.Foreground = Brushes.Black; // Меняем цвет текста, если нужно
+                }
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(textBox.Text))
+                {
+                    textBox.Text = defaultText;
+                    textBox.Foreground = Brushes.Gray; // Меняем цвет текста обратно
+                }
+            }
         }
     }
 }

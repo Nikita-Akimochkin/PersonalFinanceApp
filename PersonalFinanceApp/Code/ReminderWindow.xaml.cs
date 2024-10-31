@@ -23,11 +23,8 @@ namespace PersonalFinanceApp
         private void TextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
-            if (textBox.Text == "Введите что вам напомнить:")
-            {
-                textBox.Text = "";
-                textBox.Foreground = Brushes.Black;
-            }
+            string defaultText = textBox.Tag.ToString();
+            dbHelper.HandleFocus(textBox, defaultText, true);
         }
         #endregion
 
@@ -35,11 +32,8 @@ namespace PersonalFinanceApp
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
-            if (string.IsNullOrEmpty(textBox.Text))
-            {
-                textBox.Text = "Введите что вам напомнить:";
-                textBox.Foreground = Brushes.Gray;
-            }
+            string defaultText = textBox.Tag.ToString();
+            dbHelper.HandleFocus(textBox, defaultText, false);
         }
         #endregion
 

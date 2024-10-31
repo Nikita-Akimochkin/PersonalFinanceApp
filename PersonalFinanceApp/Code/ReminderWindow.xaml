@@ -14,9 +14,9 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
-            <TextBox x:Name="ReminderTextBox" HorizontalAlignment="Stretch" Margin="10,5,10,0" 
-            VerticalAlignment="Top" Height="95" FontSize="18" GotFocus="TextBox_GotFocus"
-            LostFocus="TextBox_LostFocus" Text="Введите что вам напомнить:" Foreground="Gray"/>
+            <TextBox x:Name="ReminderTextBox" Tag="Введите что вам напомнить:" HorizontalAlignment="Stretch" 
+                     Margin="10,5,10,0" VerticalAlignment="Top" Height="95" FontSize="18" GotFocus="TextBox_GotFocus"
+                     LostFocus="TextBox_LostFocus" Text="Введите что вам напомнить:" Foreground="Gray"/>
         </Grid>
 
         <!-- Определение Кнопки Добавить Напоминание-->
