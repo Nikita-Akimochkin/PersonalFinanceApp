@@ -19,7 +19,7 @@ namespace PersonalFinanceApp
             InitializeComponent();
         }
 
-        #region Income click
+        #region Income/Expense click
         private void IncomeButton_Click(object sender, RoutedEventArgs e)
         {
             // Подсвечиваем кнопку Доход
@@ -27,9 +27,7 @@ namespace PersonalFinanceApp
             // Возвращаем кнопку Расход к исходному виду
             ExpenseButton.Background = Brushes.LightGray;
         }
-        #endregion
 
-        #region Expneses click
         private void ExpenseButton_Click(object sender, RoutedEventArgs e)
         {
             // Подсвечиваем кнопку Расход
@@ -39,25 +37,21 @@ namespace PersonalFinanceApp
         }
         #endregion
 
-        #region GotFocus
-        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        #region Get/Lost Focus + Input restrictions for Text box
+        private void TextBox_GetFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
             string defaultText = textBox.Tag.ToString();
             dbHelper.HandleFocus(textBox, defaultText, true);
         }
-        #endregion
 
-        #region LostFocus
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
             string defaultText = textBox.Tag.ToString();
             dbHelper.HandleFocus(textBox, defaultText, false);
         }
-        #endregion
 
-        #region Amount text box
         private void AmountTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             // Разрешаем только цифры
@@ -65,7 +59,7 @@ namespace PersonalFinanceApp
         }
         #endregion
 
-        #region cont click
+        #region Continue click, Save transaction to DataBase and Update user account balance method 
         private void Continue_Click(object sender, RoutedEventArgs e)
         {
             transaction.Amount = Convert.ToInt32(AmountTextBox.Text);
@@ -99,9 +93,7 @@ namespace PersonalFinanceApp
             Close();
 
         }
-        #endregion
 
-        #region save trans
         private void SaveTransaction(int userId, int amount, string type, string category)
         {
             try
@@ -130,9 +122,7 @@ namespace PersonalFinanceApp
                 MessageBox.Show("Ошибка при сохранении транзакции: " + ex.Message);
             }
         }
-        #endregion
 
-        #region update balance
         private void UpdateAccountBalance(int userId)
         {
             try

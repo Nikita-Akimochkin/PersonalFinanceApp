@@ -21,15 +21,13 @@ namespace PersonalFinanceApp
             GetRecentTransactionsLoaded();
         }
 
-        #region Load USer Acc
+        #region Get user account balance and than loading it
         public void LoadUserAccountBalance()
         {
             user.UserAccount = GetUserAccountBalance(user.UserID);
             TotalTextBlock.Text = Convert.ToString(user.UserAccount);
         }
-        #endregion
 
-        #region GET USER ACC
         private int GetUserAccountBalance(int userId)
         {
             try
@@ -56,7 +54,7 @@ namespace PersonalFinanceApp
         }
         #endregion
 
-        #region Trans Click
+        #region Transaction Click
         private void Transaction_Click(object sender, RoutedEventArgs e)
         {
             TransactionsWindow transactionsWindow = new TransactionsWindow();
@@ -64,7 +62,7 @@ namespace PersonalFinanceApp
         }
         #endregion
 
-        #region Get Top expenses load
+        #region Get top user expenses, loading them + Full history click
         private void GetTopExpensesLoaded()
         {
             var topExpenses = GetTopExpenses(user.UserID);
@@ -79,9 +77,7 @@ namespace PersonalFinanceApp
                 });
             }
         }
-        #endregion
 
-        #region Get top expenses
         private List<(string name, int amount)> GetTopExpenses(int userId)
         {
             var categories = new List<(string name, int amount)>();
@@ -123,9 +119,7 @@ namespace PersonalFinanceApp
 
             return categories;
         }
-        #endregion
 
-        #region Show full history click
         private void ShowFullHistory_Click(object sender, RoutedEventArgs e)
         {
             FullHistoryWindow fullHistoryWindow = new FullHistoryWindow();
@@ -133,7 +127,7 @@ namespace PersonalFinanceApp
         }
         #endregion
 
-        #region Get recent trans load
+        #region Get recent user transactions, loading them + Full history click
         private void GetRecentTransactionsLoaded()
         {
             var RecentTransaction = GetRecentTransactions(user.UserID);
@@ -161,9 +155,7 @@ namespace PersonalFinanceApp
                 }
             }
         }
-        #endregion
 
-        #region Get Recent trans
         private List<(string category, string type, int amount, DateTime date)> GetRecentTransactions(int userID)
         {
             var transactions = new List<(string category, string type, int amount, DateTime date)>();
@@ -195,9 +187,7 @@ namespace PersonalFinanceApp
                 }
             }
         }
-        #endregion
 
-        #region Expand top expenses click
         private void ExpandTopExpenses_Click(object sender, RoutedEventArgs e)
         {
             var allExpensesWindow = new AllExpensesWindow(); // Создай новое окно для всех расходов

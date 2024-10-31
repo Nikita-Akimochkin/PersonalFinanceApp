@@ -11,6 +11,7 @@ namespace PersonalFinanceApp
         private static string type;
         private static DateTime date;
 
+        #region Transaction properties
         public int ID
         {
             get { return iD; }
@@ -70,6 +71,7 @@ namespace PersonalFinanceApp
                 else Console.WriteLine("Введите корректное значение");
             }
         }
+        #endregion
 
     }
 }

@@ -9,6 +9,7 @@ namespace PersonalFinanceApp
         private string description;
         private DateTime date;
 
+        #region Reminder properties
         public int ID
         {
             get { return iD; }
@@ -48,6 +49,7 @@ namespace PersonalFinanceApp
                 else Console.WriteLine("Введите корректное значение");
             }
         }
+        #endregion
 
     }
 }

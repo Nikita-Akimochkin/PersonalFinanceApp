@@ -13,7 +13,7 @@ namespace PersonalFinanceApp
         private static int userAccount;
         DataBaseHelper dbHelper = new DataBaseHelper();
 
-
+        #region Users properties
         public int UserID
         {
             get { return userID; }
@@ -63,7 +63,9 @@ namespace PersonalFinanceApp
                 else Console.WriteLine("Введите корректное значение");
             }
         }
+        #endregion
 
+        #region Get user id
         public int GetUserId(string email)
         {
             UserID = -1; // Значение по умолчанию, если пользователь не найден
@@ -96,5 +98,6 @@ namespace PersonalFinanceApp
 
             return UserID; // Возвращаем ID пользователя или -1, если не найден
         }
+        #endregion
     }
 }

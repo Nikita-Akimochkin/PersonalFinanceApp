@@ -16,16 +16,14 @@ namespace PersonalFinanceApp
             InitializeComponent();
         }
 
-        #region GotFocus
-        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        #region Get/Lost Focus
+        private void TextBox_GetFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
             string defaultText = textBox.Tag.ToString();
             dbHelper.HandleFocus(textBox, defaultText, true);
         }
-        #endregion
 
-        #region LostFocus
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -34,7 +32,7 @@ namespace PersonalFinanceApp
         }
         #endregion
 
-        #region Login_Click
+        #region Login click + Check user exist
         private void Login_Click(object sender, RoutedEventArgs e)
         {
             user.Email = EmailLoginTextBox.Text;
@@ -52,9 +50,7 @@ namespace PersonalFinanceApp
                 MessageBox.Show("Неверные данные! Попробуйте снова.");
             }
         }
-        #endregion
 
-        #region Check User Credentials
         private bool CheckUserCredentials(string email, string password)
         {
             using (NpgsqlConnection connection = dbHelper.GetConnection())
@@ -72,15 +68,21 @@ namespace PersonalFinanceApp
         }
         #endregion
 
-        #region SwitchToRegistration_Click
+        #region Switch to Registration/Login
         private void SwitchToRegistration_Click(object sender, RoutedEventArgs e)
         {
             RegistrationGrid.Visibility = Visibility.Visible;
             LoginGrid.Visibility = Visibility.Collapsed;
         }
+
+        private void SwitchToLogin_Click(object sender, RoutedEventArgs e)
+        {
+            RegistrationGrid.Visibility = Visibility.Collapsed;
+            LoginGrid.Visibility = Visibility.Visible;
+        }
         #endregion
 
-        #region Registration_Click
+        #region Registration click + User registration
         private void Registration_Click(object sender, RoutedEventArgs e)
         {
             user.UserName = NameTextBox.Text;
@@ -97,9 +99,7 @@ namespace PersonalFinanceApp
             // Вызов метода регистрации пользователя
             RegisterUser(user.UserName, user.Email, user.Password);
         }
-        #endregion
 
-        #region Register User
         private void RegisterUser(string name, string email, string password)
         {
             try
@@ -145,14 +145,6 @@ namespace PersonalFinanceApp
             {
                 MessageBox.Show($"Ошибка при регистрации: {ex.Message}");
             }
-        }
-        #endregion
-
-        #region SwitchToLogin_Click
-        private void SwitchToLogin_Click(object sender, RoutedEventArgs e)
-        {
-            RegistrationGrid.Visibility = Visibility.Collapsed;
-            LoginGrid.Visibility = Visibility.Visible;
         }
         #endregion
     }

@@ -7,6 +7,7 @@ namespace PersonalFinanceApp
     internal class DataBaseHelper
     {
 
+        #region All about connection (Get string, Get/Close connection)
         private string GetConnectionString()
         {
             return "Host=localhost;Username=postgres;Password=9097988588;Database=PersonalFinanceDB";
@@ -24,7 +25,9 @@ namespace PersonalFinanceApp
             if (connection != null && connection.State == System.Data.ConnectionState.Open)
                 connection.Close();
         }
+        #endregion
 
+        #region All about Focus (Get/Lost)
         public void HandleFocus(TextBox textBox, string defaultText, bool isFocused)
         {
             if (isFocused)
@@ -44,5 +47,6 @@ namespace PersonalFinanceApp
                 }
             }
         }
+        #endregion
     }
 }

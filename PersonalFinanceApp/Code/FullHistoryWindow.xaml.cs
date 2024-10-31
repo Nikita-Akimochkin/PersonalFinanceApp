@@ -19,7 +19,7 @@ namespace PersonalFinanceApp
             GetRecentTransactionsLoaded();
         }
 
-        #region Get recent load
+        #region Get and Load recent user transactions
         private void GetRecentTransactionsLoaded()
         {
             var RecentTransaction = GetRecentTransactions(user.UserID);
@@ -47,9 +47,7 @@ namespace PersonalFinanceApp
                 }
             }
         }
-        #endregion
 
-        #region Get recent
         private List<(string category, string type, int amount, DateTime date)> GetRecentTransactions(int userID)
         {
             var transactions = new List<(string category, string type, int amount, DateTime date)>();

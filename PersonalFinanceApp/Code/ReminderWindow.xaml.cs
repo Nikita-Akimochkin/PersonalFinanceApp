@@ -19,16 +19,14 @@ namespace PersonalFinanceApp
             GetRemindersLoaded();
         }
 
-        #region GotFocus
-        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        #region Get/Lost Focus
+        private void TextBox_GetFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
             string defaultText = textBox.Tag.ToString();
             dbHelper.HandleFocus(textBox, defaultText, true);
         }
-        #endregion
 
-        #region LostFocus
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -37,7 +35,7 @@ namespace PersonalFinanceApp
         }
         #endregion
 
-        #region rem click
+        #region Add reminder/Click methods
         private void ReminderAdd_Click(object sender, RoutedEventArgs e)
         {
             reminder.Description = ReminderTextBox.Text;
@@ -52,9 +50,7 @@ namespace PersonalFinanceApp
             // Вызов метода регистрации пользователя
             ReminderAdd(user.UserID, reminder.Description);
         }
-        #endregion 
 
-        #region Reminder Add
         private void ReminderAdd(int userId, string description)
         {
             try
@@ -88,7 +84,7 @@ namespace PersonalFinanceApp
         }
         #endregion
 
-        #region Ger load
+        #region Get and Load all user reminders
         private void GetRemindersLoaded()
         {
             var reminderList = GetReminders(user.UserID);
@@ -104,9 +100,7 @@ namespace PersonalFinanceApp
                 });
             }
         }
-        #endregion
 
-        #region Get remind
         private List<(string description, DateTime date)> GetReminders(int userID)
         {
             var reminderList = new List<(string description, DateTime date)>();
