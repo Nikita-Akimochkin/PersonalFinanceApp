@@ -16,16 +16,16 @@ namespace PersonalFinanceApp
         public FullHistoryWindow()
         {
             InitializeComponent();
-            GetRecentTransactionsLoaded();
+            LoadGetRecentTransactions();
         }
 
         #region Get and Load recent user transactions
-        private void GetRecentTransactionsLoaded()
+        private void LoadGetRecentTransactions()
         {
-            var RecentTransaction = GetRecentTransactions(user.UserID);
+            var recentTransactions = GetRecentTransactions(user.UserID);
             int i = 1;
 
-            foreach (var transaction in RecentTransaction)
+            foreach (var transaction in recentTransactions)
             {
                 if (transaction.type == "Доход")
                 {
@@ -65,14 +65,7 @@ namespace PersonalFinanceApp
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
-                        {
-                            transaction.Category = reader.GetString(0);
-                            transaction.Type = reader.GetString(1);
-                            transaction.Amount = reader.GetInt32(2);
-                            transaction.Date = reader.GetDateTime(3);
-
-                            transactions.Add((transaction.Category, transaction.Type, transaction.Amount, transaction.Date));
-                        }
+                            transactions.Add((reader.GetString(0), reader.GetString(1), reader.GetInt32(2), reader.GetDateTime(3)));
                     }
                     return transactions;
                 }

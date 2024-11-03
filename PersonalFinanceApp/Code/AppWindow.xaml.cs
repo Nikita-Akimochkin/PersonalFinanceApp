@@ -102,12 +102,7 @@ namespace PersonalFinanceApp
                         using (var reader = command.ExecuteReader())
                         {
                             while (reader.Read())
-                            {
-                                transaction.Category = reader.GetString(0);
-                                transaction.Amount = reader.GetInt32(1);
-
-                                categories.Add((transaction.Category, transaction.Amount));
-                            }
+                                categories.Add((reader.GetString(0), reader.GetInt32(1)));
                         }
                     }
                 }
@@ -130,10 +125,10 @@ namespace PersonalFinanceApp
         #region Get recent user transactions, loading them + Full history click
         private void GetRecentTransactionsLoaded()
         {
-            var RecentTransaction = GetRecentTransactions(user.UserID);
+            var recentTransaction = GetRecentTransactions(user.UserID);
             int i = 1;
 
-            foreach (var transaction in RecentTransaction)
+            foreach (var transaction in recentTransaction)
             {
                 if (transaction.type == "Доход")
                 {
@@ -173,14 +168,7 @@ namespace PersonalFinanceApp
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
-                        {
-                            transaction.Category = reader.GetString(0);
-                            transaction.Type = reader.GetString(1);
-                            transaction.Amount = reader.GetInt32(2);
-                            transaction.Date = reader.GetDateTime(3);
-
-                            transactions.Add((transaction.Category, transaction.Type, transaction.Amount, transaction.Date));
-                        }
+                            transactions.Add((reader.GetString(0), reader.GetString(1), reader.GetInt32(2), reader.GetDateTime(3)));
                     }
 
                     return transactions;

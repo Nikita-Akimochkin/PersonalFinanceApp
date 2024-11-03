@@ -118,13 +118,9 @@ namespace PersonalFinanceApp
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
-                        {
-                            reminder.Description = reader.GetString(0);
-                            reminder.Date = reader.GetDateTime(1);
-
-                            reminderList.Add((reminder.Description, reminder.Date));
-                        }
+                            reminderList.Add((reader.GetString(0), reader.GetDateTime(1)));
                     }
+
                     return reminderList;
                 }
             }
