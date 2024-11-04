@@ -98,12 +98,12 @@ namespace PersonalFinanceApp
             var reminderList = GetReminders(user.UserID);
             int i = 1;
 
-            foreach (var r in reminderList)
+            foreach (var remind in reminderList)
             {
 
                 YourReminderList.Items.Add(new TextBlock
                 {
-                    Text = $"{i++}. {r.description}\n {r.date}",
+                    Text = $"{i++}. {remind.description}\n {remind.date}",
                     Margin = new Thickness(0, 0, 0, 2)
                 });
             }

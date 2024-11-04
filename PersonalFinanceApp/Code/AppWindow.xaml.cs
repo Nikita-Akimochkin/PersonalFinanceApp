@@ -79,11 +79,11 @@ namespace PersonalFinanceApp
             var topExpenses = GetTopExpenses(user.UserID);
             int i = 1;
 
-            foreach (var category in topExpenses)
+            foreach (var transaction in topExpenses)
             {
                 TopExpensesList.Items.Add(new TextBlock
                 {
-                    Text = $"{i++}. {category.name} - {category.amount}",
+                    Text = $"{i++}. {transaction.name} - {transaction.amount}",
                     Margin = new Thickness(0, 0, 0, 4)
                 });
             }

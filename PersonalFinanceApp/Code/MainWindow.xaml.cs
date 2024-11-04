@@ -153,7 +153,7 @@ namespace PersonalFinanceApp
                             insertCommand.Parameters.AddWithValue("Name", user.UserName);
                             insertCommand.Parameters.AddWithValue("Email", user.Email);
                             insertCommand.Parameters.AddWithValue("Password", user.Password);  // Ideally, you should hash
-                            insertCommand.Parameters.AddWithValue("Registration_date", DateTime.Now);
+                            insertCommand.Parameters.AddWithValue("Registration_date", DateTime.Today);
 
                             insertCommand.ExecuteNonQuery();
 

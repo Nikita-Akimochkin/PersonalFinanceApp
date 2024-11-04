@@ -123,7 +123,7 @@ namespace PersonalFinanceApp
                         command.Parameters.AddWithValue("Amount", transaction.Amount);
                         command.Parameters.AddWithValue("Type", transaction.Type);
                         command.Parameters.AddWithValue("Category", transaction.Category);
-                        command.Parameters.AddWithValue("Registration_date", DateTime.Now);
+                        command.Parameters.AddWithValue("Registration_date", DateTime.Today);
 
                         command.ExecuteNonQuery();
                     }
