@@ -32,7 +32,7 @@ namespace PersonalFinanceApp
                 // Checks the transaction type to determine the text color
                 FullTransactionsHistoryList.Items.Add(new TextBlock
                 {
-                    Text = $"{i++}. {transaction.category} - {transaction.amount}\n {transaction.date}",
+                    Text = $"{i++}. {transaction.category} - {transaction.amount}\n {transaction.date.ToString("dd.MM.yyyy")}",
                     Foreground = transaction.type == "Доход" ? Brushes.Green : Brushes.Red,
                     Margin = new Thickness(0, 0, 0, 2)
                 });

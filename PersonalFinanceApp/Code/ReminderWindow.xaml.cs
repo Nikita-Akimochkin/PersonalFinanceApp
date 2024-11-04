@@ -103,7 +103,7 @@ namespace PersonalFinanceApp
 
                 YourReminderList.Items.Add(new TextBlock
                 {
-                    Text = $"{i++}. {remind.description}\n {remind.date}",
+                    Text = $"{i++}. {remind.description}\n {remind.date.ToString("dd.MM.yyyy")}",
                     Margin = new Thickness(0, 0, 0, 2)
                 });
             }
