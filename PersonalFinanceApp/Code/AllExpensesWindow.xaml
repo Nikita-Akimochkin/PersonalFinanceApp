@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PersonalFinanceApp"
         mc:Ignorable="d"
-        Title="AllExpensesWindow" Height="300" Width="200" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="All expenses " Height="300" Width="200" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Grid>
         <StackPanel>
-            <TextBlock Text="Все расходы" FontWeight="Bold" FontSize="16"/>
+            <TextBlock Text="All expenses:" FontWeight="Bold" FontSize="16"/>
             <ItemsControl x:Name="AllExpensesList">
-                <!-- Здесь будут элементы списка -->
+                <!-- Here will be the items in the list -->
             </ItemsControl>
         </StackPanel>
     </Grid>

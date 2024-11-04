@@ -7,31 +7,33 @@
         mc:Ignorable="d"
         Title="Reminder" Height="500" Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Grid>
+        <!-- Row definitions -->
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
             <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <!-- Reminder row definition-->
         <Grid Grid.Row="0">
-            <TextBox x:Name="ReminderTextBox" Tag="Введите что вам напомнить:" HorizontalAlignment="Stretch" 
+            <TextBox x:Name="ReminderTextBox" Tag="What you need to reminded of?" HorizontalAlignment="Stretch" 
                      Margin="10,5,10,0" VerticalAlignment="Top" Height="95" FontSize="18" GotFocus="TextBox_GetFocus"
-                     LostFocus="TextBox_LostFocus" Text="Введите что вам напомнить:" Foreground="Gray"/>
+                     LostFocus="TextBox_LostFocus" Text="What you need to reminded of?" Foreground="Gray"/>
         </Grid>
 
-        <!-- Определение Кнопки Добавить Напоминание-->
+        <!-- Definition of Add Reminder Button-->
         <Grid Grid.Row="1">
-            <Button Content="Добавить напоминание" FontSize="14" Margin="70,5,70,5" Background="LightGray"
+            <Button Content="Add a reminder" FontSize="14" Margin="70,5,70,5" Background="LightGray"
             Click="ReminderAdd_Click"/>
         </Grid>
 
-        <!-- Определение коробки с вашими напоминаниями-->
+        <!-- Defining your reminder box-->
         <Grid Grid.Row="2">
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                 <StackPanel>
-                    <TextBlock Text="Ваши напоминания" FontWeight="Bold" FontSize="16"/>
+                    <TextBlock Text="Your reminders" FontWeight="Bold" FontSize="16"/>
                     <ItemsControl x:Name="YourReminderList">
-                        <!-- Здесь будут элементы списка -->
+                        <!-- Here will be the items in the list -->
                     </ItemsControl>
                 </StackPanel>
             </ScrollViewer>

@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PersonalFinanceApp"
         mc:Ignorable="d"
-        Title="FullHistory" Height="300" Width="200" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="Full history" Height="300" Width="200" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel>
-            <TextBlock Text="Полная история" FontWeight="Bold" FontSize="16"/>
+            <TextBlock Text="Full history:" FontWeight="Bold" FontSize="16"/>
             <ItemsControl x:Name="FullTransactionsHistoryList">
-                <!-- Здесь будут элементы списка -->
+                <!-- Here will be the items in the list -->
             </ItemsControl>
         </StackPanel>
     </ScrollViewer>

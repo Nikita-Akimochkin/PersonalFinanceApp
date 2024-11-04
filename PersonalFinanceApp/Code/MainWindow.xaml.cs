@@ -3,6 +3,7 @@ using Npgsql;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Markup;
 
 namespace PersonalFinanceApp
 {
@@ -17,6 +18,8 @@ namespace PersonalFinanceApp
         }
 
         #region Get/Lost Focus
+
+        // Processes getting TextBox focus
         private void TextBox_GetFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -24,6 +27,7 @@ namespace PersonalFinanceApp
             dbHelper.HandleFocus(textBox, defaultText, true);
         }
 
+        // Handles loss of focus TextBox
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -33,6 +37,8 @@ namespace PersonalFinanceApp
         #endregion
 
         #region Login click + Check user exist
+
+        // Processes the login button press, checking the user's existence
         private void Login_Click(object sender, RoutedEventArgs e)
         {
             user.Email = EmailLoginTextBox.Text;
@@ -47,15 +53,20 @@ namespace PersonalFinanceApp
             }
             else
             {
-                MessageBox.Show("Неверные данные! Попробуйте снова.");
+                MessageBox.Show("Invalid data! Try again.");
             }
         }
 
+        // Checks if a user with the specified email and password exists
         private bool CheckUserCredentials(string email, string password)
         {
             using (NpgsqlConnection connection = dbHelper.GetConnection())
             {
-                string query = "SELECT COUNT(*) FROM users WHERE email = @Email AND password = @Password";
+                string query = @"
+                    SELECT COUNT(*) 
+                    FROM users 
+                    WHERE email = @Email AND password = @Password";
+
                 using (NpgsqlCommand cmd = new NpgsqlCommand(query, connection))
                 {
                     cmd.Parameters.AddWithValue("Email", user.Email);
@@ -69,12 +80,15 @@ namespace PersonalFinanceApp
         #endregion
 
         #region Switch to Registration/Login
+
+        // Go to the registration window
         private void SwitchToRegistration_Click(object sender, RoutedEventArgs e)
         {
             RegistrationGrid.Visibility = Visibility.Visible;
             LoginGrid.Visibility = Visibility.Collapsed;
         }
 
+        // Go to the login window
         private void SwitchToLogin_Click(object sender, RoutedEventArgs e)
         {
             RegistrationGrid.Visibility = Visibility.Collapsed;
@@ -83,32 +97,38 @@ namespace PersonalFinanceApp
         #endregion
 
         #region Registration click + User registration
+
+        // Processes pressing the registration button, checks if the fields are filled in and calls user registration
         private void Registration_Click(object sender, RoutedEventArgs e)
         {
             user.UserName = NameTextBox.Text;
             user.Email = EmailTextBox.Text;
             user.Password = PasswordTextBox.Text;
 
-            // Проверка на пустые поля
+            // Check for empty fields
             if (string.IsNullOrWhiteSpace(user.UserName) || string.IsNullOrWhiteSpace(user.Email) || string.IsNullOrWhiteSpace(user.Password))
             {
-                MessageBox.Show("Пожалуйста, заполните все поля!");
+                MessageBox.Show("Please fill in all fields!");
                 return;
             }
 
-            // Вызов метода регистрации пользователя
+            // Call method "RegisterUser"
             RegisterUser(user.UserName, user.Email, user.Password);
         }
 
+        // Registers a new user in the database, checking if the email is unique
         private void RegisterUser(string name, string email, string password)
         {
             try
             {
-                // Строка подключения к PostgreSQL
                 using (NpgsqlConnection connection = dbHelper.GetConnection())
                 {
-                    // Проверка, существует ли уже пользователь с таким email
-                    string checkEmailQuery = "SELECT COUNT(*) FROM users WHERE email = @Email";
+                    // Check if such a user already exists
+                    string checkEmailQuery = @"
+                        SELECT COUNT(*) 
+                        FROM users 
+                        WHERE email = @Email";
+
                     using (NpgsqlCommand checkCommand = new NpgsqlCommand(checkEmailQuery, connection))
                     {
                         checkCommand.Parameters.AddWithValue("Email", user.Email);
@@ -116,34 +136,37 @@ namespace PersonalFinanceApp
 
                         if (userCount > 0)
                         {
-                            MessageBox.Show("Пользователь с таким Email уже существует!");
+                            MessageBox.Show("A user with this Email already exists!");
                             return;
                         }
                     }
 
-                    // Если Email уникальный, добавляем пользователя
-                    string insertQuery = "INSERT INTO users (name, email, password, account, registration_date) VALUES (@Name, @Email, @Password, 0, @Registration_date)";
+                    // If Email unique, add this user
+                    string insertQuery = @"
+                        INSERT INTO users (name, email, password, account, registration_date) 
+                        VALUES (@Name, @Email, @Password, 0, @Registration_date)";
+
                     using (NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connection))
                     {
-                        if (user.UserName != "Введите Name:" && user.Email != "Введите Email:" && user.Password != "Введите Password:")
+                        if (user.UserName != "Username:" && user.Email != "Email:" && user.Password != "Password:")
                         {
                             insertCommand.Parameters.AddWithValue("Name", user.UserName);
                             insertCommand.Parameters.AddWithValue("Email", user.Email);
-                            insertCommand.Parameters.AddWithValue("Password", user.Password);  // В идеале нужно хэшировать пароль
+                            insertCommand.Parameters.AddWithValue("Password", user.Password);  // Ideally, you should hash
                             insertCommand.Parameters.AddWithValue("Registration_date", DateTime.Now);
 
                             insertCommand.ExecuteNonQuery();
 
-                            MessageBox.Show("Регистрация прошла успешно!");
+                            MessageBox.Show("Registration was successful!");
                             return;
                         }
-                        MessageBox.Show("Введите данные!");
+                        MessageBox.Show("Enter the data!");
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при регистрации: {ex.Message}");
+                MessageBox.Show($"Registration error: {ex.Message}");
             }
         }
         #endregion

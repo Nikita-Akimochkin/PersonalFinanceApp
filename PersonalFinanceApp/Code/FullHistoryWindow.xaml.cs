@@ -16,38 +16,30 @@ namespace PersonalFinanceApp
         public FullHistoryWindow()
         {
             InitializeComponent();
-            LoadGetRecentTransactions();
+            LoadRecentTransactions();
         }
 
         #region Get and Load recent user transactions
-        private void LoadGetRecentTransactions()
+
+        // Loads the latest user transactions and displays them in the interface
+        private void LoadRecentTransactions()
         {
             var recentTransactions = GetRecentTransactions(user.UserID);
             int i = 1;
 
             foreach (var transaction in recentTransactions)
             {
-                if (transaction.type == "Доход")
+                // Checks the transaction type to determine the text color
+                FullTransactionsHistoryList.Items.Add(new TextBlock
                 {
-                    FullTransactionsHistoryList.Items.Add(new TextBlock
-                    {
-                        Text = $"{i++}. {transaction.category} - {transaction.amount}\n {transaction.date}",
-                        Foreground = Brushes.Green,
-                        Margin = new Thickness(0, 0, 0, 2)
-                    });
-                }
-                else
-                {
-                    FullTransactionsHistoryList.Items.Add(new TextBlock
-                    {
-                        Text = $"{i++}. {transaction.category} - {transaction.amount}\n {transaction.date}",
-                        Foreground = Brushes.Red,
-                        Margin = new Thickness(0, 0, 0, 2)
-                    });
-                }
+                    Text = $"{i++}. {transaction.category} - {transaction.amount}\n {transaction.date}",
+                    Foreground = transaction.type == "Доход" ? Brushes.Green : Brushes.Red,
+                    Margin = new Thickness(0, 0, 0, 2)
+                });
             }
         }
 
+        // Gets the latest user transactions from the database
         private List<(string category, string type, int amount, DateTime date)> GetRecentTransactions(int userID)
         {
             var transactions = new List<(string category, string type, int amount, DateTime date)>();
@@ -58,7 +50,7 @@ namespace PersonalFinanceApp
                     SELECT category, type, amount, registration_date
                     FROM transactions WHERE userid=@UserId
                     ORDER BY transactionid DESC
-                    LIMIT 30", connection))
+                    LIMIT 30", connection)) // Limits the number of transactions to 30
                 {
                     command.Parameters.AddWithValue("UserId", user.UserID);
 

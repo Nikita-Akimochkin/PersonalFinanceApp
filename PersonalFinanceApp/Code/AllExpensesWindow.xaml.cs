@@ -18,10 +18,12 @@ namespace PersonalFinanceApp
             LoadAllExpenses();
         }
 
-        #region Get and Load all user expenses 
+        #region Get and Load all user expenses
+
+        // Loads all user costs and displays them in the interface
         private void LoadAllExpenses()
         {
-            var allCategories = GetAllExpenses(user.UserID); // Метод, который получает все категории
+            var allCategories = GetAllExpenses(user.UserID);
             int i = 1;
 
             foreach (var category in allCategories)
@@ -36,6 +38,7 @@ namespace PersonalFinanceApp
             }
         }
 
+        // Gets all user costs from the database
         private List<(string name, int amount)> GetAllExpenses(int userId)
         {
             var categories = new List<(string name, int amount)>();
@@ -50,7 +53,7 @@ namespace PersonalFinanceApp
                         command.CommandText = @"
                             SELECT category, SUM(amount) AS total_amount
                             FROM transactions
-                            WHERE userId = @UserId AND type = 'Расход'
+                            WHERE userId = @UserId AND type = 'Expense'
                             GROUP BY category
                             ORDER BY total_amount DESC
                             LIMIT 8";
@@ -67,7 +70,8 @@ namespace PersonalFinanceApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка при получении топ расходов: " + ex.Message);
+                // Handles exceptions by displaying an error message
+                MessageBox.Show("Error in getting the top costs: " + ex.Message);
             }
 
             return categories;

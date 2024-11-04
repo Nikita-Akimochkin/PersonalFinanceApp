@@ -20,24 +20,29 @@ namespace PersonalFinanceApp
         }
 
         #region Income/Expense click
+
+        // Processes clicks on the “Income” button, changing their color to indicate the selection.
         private void IncomeButton_Click(object sender, RoutedEventArgs e)
         {
-            // Подсвечиваем кнопку Доход
             IncomeButton.Background = Brushes.LightGreen;
-            // Возвращаем кнопку Расход к исходному виду
             ExpenseButton.Background = Brushes.LightGray;
+            CategoryText.Text = "Income";
+            CategoryComboBox.Visibility = Visibility.Collapsed;
         }
 
+        // Processes clicks on the “Expense” button, changing their color to indicate the selection.
         private void ExpenseButton_Click(object sender, RoutedEventArgs e)
         {
-            // Подсвечиваем кнопку Расход
             ExpenseButton.Background = Brushes.OrangeRed;
-            // Возвращаем кнопку Доход к исходному виду
             IncomeButton.Background = Brushes.LightGray;
+            CategoryText.Text = "Select a category:";
+            CategoryComboBox.Visibility = Visibility.Visible;
         }
         #endregion
 
         #region Get/Lost Focus + Input restrictions for Text box
+
+        // Processes getting TextBox focus
         private void TextBox_GetFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -45,6 +50,7 @@ namespace PersonalFinanceApp
             dbHelper.HandleFocus(textBox, defaultText, true);
         }
 
+        // Handles loss of focus TextBox
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -52,48 +58,54 @@ namespace PersonalFinanceApp
             dbHelper.HandleFocus(textBox, defaultText, false);
         }
 
+        // We only allow numbers
         private void AmountTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            // Разрешаем только цифры
             e.Handled = !int.TryParse(e.Text, out _);
         }
         #endregion
 
         #region Continue click, Save transaction to DataBase and Update user account balance method 
+
+        // Processes a click on the “Continue” button, saves the transaction to the database and updates the user's account balance.
         private void Continue_Click(object sender, RoutedEventArgs e)
         {
             transaction.Amount = Convert.ToInt32(AmountTextBox.Text);
             transaction.Category = (CategoryComboBox.SelectedItem as ComboBoxItem)?.Content.ToString();
             var appWindow = Application.Current.Windows.OfType<AppWindow>().FirstOrDefault();
 
-            if (IncomeButton.Background == Brushes.LightGreen) transaction.Type = "Доход";
-            else if (ExpenseButton.Background == Brushes.OrangeRed) transaction.Type = "Расход";
+            if (IncomeButton.Background == Brushes.LightGreen)
+            {
+                transaction.Category = "Income";
+                transaction.Type = "Income";
+            }
+            else if (ExpenseButton.Background == Brushes.OrangeRed) transaction.Type = "Expense";
             else
             {
-                MessageBox.Show("Пожалуйста, Выберите тип: Доход/Расход.");
+                MessageBox.Show("Please select type: Income/Expense.");
                 return;
             }
 
-            if (transaction.Category == null)
+            if (transaction.Category == null && transaction.Type == "Expense")
             {
-                MessageBox.Show("Пожалуйста, выберите категорию.");
+                MessageBox.Show("Please select a category.");
                 return;
             }
 
-            // Сохранение транзакции в базе данных
+            // Saving the transaction in the database
             SaveTransaction(user.UserID, transaction.Amount, transaction.Type, transaction.Category);
 
+            //Updates the user's balance
             UpdateAccountBalance(user.UserID);
 
             appWindow.LoadUserAccountBalance();
 
-
-            // Закрыть окно транзакций или показать сообщение об успехе
-            MessageBox.Show("Транзакция успешно добавлена.");
+            MessageBox.Show("Transaction successfully added.");
             Close();
 
         }
 
+        // Saves the transaction to the database
         private void SaveTransaction(int userId, int amount, string type, string category)
         {
             try
@@ -103,9 +115,10 @@ namespace PersonalFinanceApp
                     using (var command = new NpgsqlCommand())
                     {
                         command.Connection = connection;
-                        // SQL запрос для добавления новой транзакции
-                        command.CommandText = "INSERT INTO Transactions (userID, amount, type, category, registration_date) " +
-                                          "VALUES (@UserID, @Amount, @Type, @Category, @Registration_date)";
+                        command.CommandText = @"
+                            INSERT INTO Transactions (userID, amount, type, category, registration_date)
+                            VALUES (@UserID, @Amount, @Type, @Category, @Registration_date)";
+
                         command.Parameters.AddWithValue("UserID", user.UserID);
                         command.Parameters.AddWithValue("Amount", transaction.Amount);
                         command.Parameters.AddWithValue("Type", transaction.Type);
@@ -119,10 +132,11 @@ namespace PersonalFinanceApp
 
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка при сохранении транзакции: " + ex.Message);
+                MessageBox.Show("Error when saving a transaction: " + ex.Message);
             }
         }
 
+        // Updates the user's account balance.
         private void UpdateAccountBalance(int userId)
         {
             try
@@ -132,18 +146,16 @@ namespace PersonalFinanceApp
                     using (var command = new NpgsqlCommand())
                     {
                         command.Connection = connection;
-                        // Обновление баланса аккаунта
                         command.CommandText = @"
                             UPDATE users
                             SET account = (
-                                SELECT COALESCE(SUM(CASE 
-                                                        WHEN type = 'Доход' THEN amount 
-                                                        WHEN type = 'Расход' THEN -amount 
-                                                        ELSE 0 
-                                                    END), 0)
-                                FROM transactions 
-                                WHERE userid = @UserId
-                            )
+                            SELECT COALESCE(SUM(CASE 
+                            WHEN type = 'Income' THEN amount 
+                            WHEN type = 'Expense' THEN -amount 
+                            ELSE 0 
+                            END), 0)
+                            FROM transactions 
+                            WHERE userid = @UserId)
                             WHERE id = @UserId";
 
                         command.Parameters.AddWithValue("UserId", user.UserID);
@@ -153,7 +165,7 @@ namespace PersonalFinanceApp
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка при обновлении баланса: " + ex.Message);
+                MessageBox.Show("Error when updating balance: " + ex.Message);
             }
         }
         #endregion

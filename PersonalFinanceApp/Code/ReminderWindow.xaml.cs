@@ -16,10 +16,12 @@ namespace PersonalFinanceApp
         public ReminderWindow()
         {
             InitializeComponent();
-            GetRemindersLoaded();
+            LoadReminders();
         }
 
         #region Get/Lost Focus
+
+        // Event handler for getting focus for a text field
         private void TextBox_GetFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -27,6 +29,7 @@ namespace PersonalFinanceApp
             dbHelper.HandleFocus(textBox, defaultText, true);
         }
 
+        // Focus loss event handler for text field
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = sender as TextBox;
@@ -36,56 +39,61 @@ namespace PersonalFinanceApp
         #endregion
 
         #region Add reminder/Click methods
+
+        // Event handler for the event of pressing the button to add a reminder
         private void ReminderAdd_Click(object sender, RoutedEventArgs e)
         {
             reminder.Description = ReminderTextBox.Text;
 
-            // Проверка на пустые поля
             if (string.IsNullOrWhiteSpace(reminder.Description))
             {
-                MessageBox.Show("Пожалуйста, напишите, что вам напомнить.");
+                MessageBox.Show("Please post what you would like to be reminded of.");
                 return;
             }
 
-            // Вызов метода регистрации пользователя
             ReminderAdd(user.UserID, reminder.Description);
         }
 
+        // Method for adding a reminder to the database
         private void ReminderAdd(int userId, string description)
         {
             try
             {
-                // Строка подключения к PostgreSQL
                 using (NpgsqlConnection connection = dbHelper.GetConnection())
                 {
-                    // Если Email уникальный, добавляем пользователя
-                    string insertQuery = "INSERT INTO reminders (userID, description, registration_date) VALUES (@UserID, @Description, @Registration_date)";
+                    string insertQuery = @"
+                        INSERT INTO reminders (userID, description, registration_date) 
+                        VALUES (@UserID, @Description, @Registration_date)";
+
                     using (NpgsqlCommand command = new NpgsqlCommand(insertQuery, connection))
                     {
-                        if (description != "Введите что вам напомнить:")
+                        if (description != "What you need to reminded of?")
                         {
                             command.Parameters.AddWithValue("UserID", user.UserID);
                             command.Parameters.AddWithValue("Description", reminder.Description);
-                            command.Parameters.AddWithValue("Registration_date", DateTime.Now);
+                            command.Parameters.AddWithValue("Registration_date", DateTime.Today);
 
                             command.ExecuteNonQuery();
 
-                            MessageBox.Show("Напоминание успешно добавлено!");
+                            MessageBox.Show("Reminder has been successfully added!");
                             return;
                         }
-                        MessageBox.Show("Введите данные!");
+                        MessageBox.Show("Enter the data!");
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при вводе напоминания: {ex.Message}");
+                // Handles exceptions
+                MessageBox.Show($"Error when entering a reminder: {ex.Message}");
             }
         }
         #endregion
 
         #region Get and Load all user reminders
-        private void GetRemindersLoaded()
+
+        // Method for loading and displaying all user reminders
+        private void LoadReminders()
         {
             var reminderList = GetReminders(user.UserID);
             int i = 1;
@@ -101,6 +109,7 @@ namespace PersonalFinanceApp
             }
         }
 
+        // Method to get the list of reminders from the database
         private List<(string description, DateTime date)> GetReminders(int userID)
         {
             var reminderList = new List<(string description, DateTime date)>();
