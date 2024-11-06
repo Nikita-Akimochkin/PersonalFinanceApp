@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using System;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -6,11 +7,12 @@ namespace PersonalFinanceApp
 {
     internal class DataBaseHelper
     {
+        string password = Environment.GetEnvironmentVariable("DB_PASSWORD");
 
         #region All about connection (Get string, Get/Close connection)
         private string GetConnectionString()
         {
-            return "Host=localhost;Username=postgres;Password=9097988588;Database=PersonalFinanceDB";
+            return $"Host=localhost;Username=postgres;Password={password};Database=PersonalFinanceDB";
         }
 
         public NpgsqlConnection GetConnection()
